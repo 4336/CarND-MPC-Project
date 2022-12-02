@@ -23,7 +23,7 @@ const double Lf = 2.67;
 
 double ref_cte = 0;
 double ref_epsi = 0;
-double ref_v = 85;
+double ref_v = 30;
 
 size_t x_start = 0;
 size_t y_start = x_start + N;
@@ -243,7 +243,7 @@ Solution MPC::Solve(Eigen::VectorXd x0, Eigen::VectorXd coeffs) {
   // options for IPOPT solver
   std::string options;
   // Uncomment this if you'd like more print information
-  options += "Integer print_level 0\n";
+  // options += "Integer print_level 0\n";
   // NOTE: Setting sparse to true allows the solver to take advantage
   //   of sparse routines, this makes the computation MUCH FASTER. If you can
   //   uncomment 1 of these and see if it makes a difference or not but if you
@@ -252,7 +252,7 @@ Solution MPC::Solve(Eigen::VectorXd x0, Eigen::VectorXd coeffs) {
   options += "Sparse true reverse\n";
   // NOTE: Currently the solver has a maximum time limit of 0.5 seconds.
   // Change this as you see fit.
-  options += "Numeric max_cpu_time 0.5\n";
+  options += "Numeric max_cpu_time 0.05\n";
 
   // place to return solution
   CppAD::ipopt::solve_result<Dvector> solution;

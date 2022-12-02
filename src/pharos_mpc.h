@@ -5,9 +5,9 @@
 #include "Eigen-3.3/Eigen/Core"
 #include <ros/ros.h>
 
-const size_t N = 3;
+const size_t N = 12;
 const double dt = 0.05;
-const int latency_ind = 1; //latency  in units of dt (100ms)
+const int latency_ind = 2; //latency  in units of dt (100ms)
 
 struct Solution {
 

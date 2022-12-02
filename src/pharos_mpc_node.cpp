@@ -138,6 +138,9 @@ int main(int argc, char **argv)
           Eigen::VectorXd state(6);
           state << 0, 0, 0, v, cte, epsi;
 
+          std::cout<<state<<std::endl;
+          std::cout<<"coeffs: "<<coeffs<<std::endl;
+
           ROS_WARN("MPC SOLVING...");
           // compute the optimal trajectory          
           Solution sol = mpc.Solve(state, coeffs);
