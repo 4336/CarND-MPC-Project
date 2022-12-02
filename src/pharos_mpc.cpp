@@ -1,4 +1,4 @@
-#include "MPC.h"
+#include "pharos_mpc.h"
 #include <cppad/cppad.hpp>
 #include <cppad/ipopt/solve.hpp>
 #include <iostream>

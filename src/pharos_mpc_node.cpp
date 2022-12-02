@@ -9,7 +9,9 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "helpers.h"
 #include "json.hpp"
-#include "MPC.h"
+#include "pharos_mpc.h"
+
+#include <ros/ros.h>
 
 // for convenience
 using nlohmann::json;
@@ -21,7 +23,24 @@ constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
 
+void vehicle_frame_Callback(const nav_msgs::Odometry::ConstPtr& msg)
+{
+  std::cout<<"vehicle_pose: "<<msg->pose.pose.position.x<<" "<<msg->pose.pose.position.y<<std::endl;
+  pub.publish(msg);
+}
+
 int main() {
+  ros::init(argc, argv, "pharos_mpc_node");
+
+  ros::NodeHandle nh;
+  ros::NodeHandle pnh("~");
+
+  sub = nh.subscribe("/mpc/ref_path", 10, Callback); //topic que function
+  sub = nh.subscribe("/odom/vehicle_frame", 10, vehicle_frame_Callback); //topic que function
+  pub = nh.advertise<geometry_msgs::Vector3Stamped>("/mpc/cmd", 10); //topic que
+
+  // ros::spin();
+
   uWS::Hub h;
 
   // MPC is initialized here!
