@@ -12,6 +12,13 @@
 #include "pharos_mpc.h"
 
 #include <ros/ros.h>
+#include <nav_msgs/Odometry.h>
+#include <nav_msgs/Path.h>
+#include <geometry_msgs/Vector3Stamped.h>
+
+ros::Subscriber sub_path;
+ros::Subscriber sub_pos;
+ros::Publisher pub_cmd;
 
 // for convenience
 using nlohmann::json;
@@ -23,23 +30,35 @@ constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
 
-void vehicle_frame_Callback(const nav_msgs::Odometry::ConstPtr& msg)
+void ref_path_Callback(const nav_msgs::Path::ConstPtr& msg)
 {
-  std::cout<<"vehicle_pose: "<<msg->pose.pose.position.x<<" "<<msg->pose.pose.position.y<<std::endl;
-  pub.publish(msg);
+  std::vector<double> vec_x;
+  std::vector<double> vec_y;
+  std::cout<<"x\ty - "<<sizeof(msg->poses)/sizeof(msg->poses.begin())<<std::endl;
+  for(int i=0; i<sizeof(msg->poses)/sizeof(msg->poses.begin()); i++){
+    vec_x.push_back(msg->poses[i].pose.position.x);
+    vec_y.push_back(msg->poses[i].pose.position.y);
+    std::cout<<vec_x[i]<<"\t"<<vec_y[i]<<std::endl;
+  }
 }
 
-int main() {
+void vehicle_state_Callback(const nav_msgs::Odometry::ConstPtr& msg)
+{
+  std::cout<<"vehicle_pose: "<<msg->pose.pose.position.x<<" "<<msg->pose.pose.position.y<<std::endl;
+}
+
+int main(int argc, char **argv)
+{
   ros::init(argc, argv, "pharos_mpc_node");
 
   ros::NodeHandle nh;
   ros::NodeHandle pnh("~");
 
-  sub = nh.subscribe("/mpc/ref_path", 10, Callback); //topic que function
-  sub = nh.subscribe("/odom/vehicle_frame", 10, vehicle_frame_Callback); //topic que function
-  pub = nh.advertise<geometry_msgs::Vector3Stamped>("/mpc/cmd", 10); //topic que
+  sub_path = nh.subscribe("/mpc/ref_path", 10, ref_path_Callback); //topic que function
+  sub_pos = nh.subscribe("/odom/vehicle_frame", 10, vehicle_state_Callback); //topic que function
+  pub_cmd = nh.advertise<geometry_msgs::Vector3Stamped>("/mpc/cmd", 10); //topic que
 
-  // ros::spin();
+  ros::spin();
 
   uWS::Hub h;
 
